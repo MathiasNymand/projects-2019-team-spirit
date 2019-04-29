@@ -1,0 +1,206 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "## Importing stuff \n",
+    "\n",
+    "import numpy as np\n",
+    "from scipy import linalg\n",
+    "from scipy import optimize\n",
+    "import sympy as sm\n",
+    "sm.init_printing(use_unicode=True)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 83,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "K = sm.symbols('K')\n",
+    "L = sm.symbols('L')\n",
+    "Y = sm.symbols('Y')\n",
+    "B = sm.symbols('B')\n",
+    "Q = sm.symbols('Q')\n",
+    "R = sm.symbols('R')\n",
+    "E = sm.symbols('E')\n",
+    "z = sm.symbols('z')\n",
+    "omega = sm.symbols('omega')\n",
+    "alpha = sm.symbols('alpha')\n",
+    "delta = sm.symbols('delta')\n",
+    "s = sm.symbols('s')\n",
+    "g = sm.symbols('g')\n",
+    "n = sm.symbols('n')\n",
+    "theta = sm.symbols('theta')\n",
+    "A = sm.symbols('A')\n",
+    "epsilon = sm.symbols('epsilon')\n",
+    "B_t = sm.symbols('B_t')\n",
+    "K_t = sm.symbols('K_t')\n",
+    "L_t = sm.symbols('L_t')\n",
+    "Omega_t = sm.symbols('Omega_t')\n",
+    "k_t = sm.symbols('k_t')\n",
+    "k = sm.symbols('k')\n",
+    "y = sm.symbols('y')\n",
+    "\n",
+    "\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 84,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "image/png": "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\n",
+      "text/latex": [
+       "$$\\left [ \\left(\\frac{Q \\left(B L\\right)^{\\alpha}}{B L}\\right)^{\\frac{1}{\\alpha}}\\right ]$$"
+      ],
+      "text/plain": [
+       "⎡        __________⎤\n",
+       "⎢       ╱        α ⎥\n",
+       "⎢      ╱  Q⋅(B⋅L)  ⎥\n",
+       "⎢alpha╱   ──────── ⎥\n",
+       "⎣   ╲╱      B⋅L    ⎦"
+      ]
+     },
+     "execution_count": 84,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "Gross_output=sm.Eq(Q,((K**alpha)*(B*L)**(1-alpha)))\n",
+    "frank=sm.solve(Gross_output,K)\n",
+    "frank"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 86,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "image/png": "iVBORw0KGgoAAAANSUhEUgAAAJUAAAAYCAYAAADzjL9JAAAABHNCSVQICAgIfAhkiAAABY5JREFUaIHtmn1olVUYwH+7K92mbbGkEWGUfWifGH5UpGuR1h9af1QUpQgRBKF9UBFsCA2CEEpsjUDsY7ePYeHM6QJt9kGWsYWDjSITIxJdqzUtazVzbuuP5zns7Nzz3vu+d3f3tnF/cLj3Ps85z3nOeZ/z+V7IkydPnpBUAi3Az8AIcG+2Ko5lq6I8GSEO1IbMOwPoAtZNlDNBZCqoFgGfAgPAYWAJcB+wL0P2Ad4GepHOyiYLkJH+cIbsZaOvAHYD64EPMmw3LfYinXirR1eBdMgI4nQ5cAPSQdXA5cBWzdMF3JIhnxYCw8BTKXy20xDQB7Tib4tpx9IQ9e8AeoCZkbxOZLx9FSf8TGUTZvmrQPrsFUceNR68HEceYKkjXwJ0a8W1jM5y+4H3rHwrNM/eFI2IQivwB1AcoD8OnFa/TNoIfIk0eBC41spfoPaGCBcoi9VOTVTHHcbbV3EmLqgewR88UeMhgUvV8CFH/jTyYPqAOyz5hZq/ypLdrrIbUzQiLFcgjdoSoDc+HwjQm5H0rGNzBPgugh8HgSNAoSOvJXGWdFMV6fVVDdBvpUFk8NiyMDNtmKDajTxfu31R48HL/WrkXf1diqzJI0A7cJGT33RKiSV7Avg2SR1nA08CnchScAzYBExTO78CjVb+DVrHbSl8fjVA36j6NZbsAZW9k8RPl+e0jNuJs4B5KVIJ6fVVOXCZlbYjy5MtC5q9bVIFVRnwL9DgyKPGAwBnOb8X6ucB4DqgCVn7NyMdcNrJfw4yiwxbzlUj06KPcmAPsln9EPgIWIkEWbfaKUceoGEZMsW2Bdg0Prd7dPPVfg+w01MmaHbzsV8/l6vfhj5NqYjaVwAnNBn+0t8/hKgvCiuQQe1u6qPGg5fPkCjcAvwD/A2sTpJ/juZ/HhmRLUAHcBIZRS6tmv9xSzYLOAV8gjz81yzdDOAM8E1In2s1vQjsQqboNuAqp8znWubmJHZdyrTM1xHK2ETtKx9xwu+pZiKDar7W+4x+980u25CltMiRR42HBMzm1ewD+oFrQpSrAX5DAqMROBf4CgkQm2Vqd5/WZfO96k4Bsy252fu0hvTZTYeBe5wyMeBPJFijXk8MAL9ELGMTtq+CiBM+qKrw90ncyVeEzIDbHHm68TCGuYxuyjr0+/qoRpLwltq826PrVF2dI79J5e8H2DQ+f+HIS5E9zDHVr7B081SWbC8TRDcSjFOJu5D+eNCRZyQeVmnBBuAC4Kj+XpW+v2P4CVmDSzy6TmRqrXDkZuremVBCMD7XB+jXkhiUq/GP2DCcQEb1VKIB2aSXOfK048G+WzCbsg5kOl6JTHlvIu+RxkMxspYfQdZmmznI7NGOnPxsevXzvAC7xufOAL0pb1/K2e2MQgxZrnpTZZxEFAJ3ItcuJx1d2vHgCypzIupCjpSFQDPy4NOlGFmjhz26TcB0/MtKD7IHmRtgN1VQLdDPQx5ZlJMf6kNBkromI5XIgN3h0Y07HmLItD5I4r3HOmTa+xE4P6rXSoHaH0KOpoZHGd0IBp2qmlTvnpBsn6d7yi1FNtaDVp0xZLSdIdz9js1D6kfWX9BOIPXIM3G3HRmJh6s1Y1eAvk71bZ5KwlKvNnqRi8rtyMzVzOjRdTNyh2VjLirXBvj8O2Nfz9QBH6tugLFHYFOmH3g9IG0I8H8rEoyzA/STkaMkHnIgQ/GwRjO9EaCPIfc+I0gwpPPvhiLgJaQhg0hwbURu2Bczeq2w3Ck3DTnGu5ebxmc39SP3Wi8jrxnClLHTHo/vZUiANodv7v+eRUh7fS/psxEPOacaacD1Oar/McL/o2Gy8ALSpkty7UiuKEJOji05qLsY+fdkUw7qnkgOMrUOHWlRibwTzPaf9K5E9moXZ7nePHny5MmTJ8/k4T/EJd/rPrWfggAAAABJRU5ErkJggg==\n",
+      "text/latex": [
+       "$$\\frac{K^{\\alpha} \\alpha \\left(B L\\right)^{- \\alpha + 1}}{K}$$"
+      ],
+      "text/plain": [
+       " α        -α + 1\n",
+       "K ⋅α⋅(B⋅L)      \n",
+       "────────────────\n",
+       "       K        "
+      ]
+     },
+     "execution_count": 86,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "Q=((K**alpha)*(B*L)**(1-alpha))\n",
+    "sm.diff(Q,K)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 54,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "image/png": "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\n",
+      "text/latex": [
+       "$$\\left [ \\left(\\frac{s \\left(- \\theta + 1\\right)}{\\delta + g + n}\\right)^{- \\frac{1}{\\alpha - 1}}\\right ]$$"
+      ],
+      "text/plain": [
+       "⎡             -1  ⎤\n",
+       "⎢            ─────⎥\n",
+       "⎢            α - 1⎥\n",
+       "⎢⎛s⋅(-θ + 1)⎞     ⎥\n",
+       "⎢⎜──────────⎟     ⎥\n",
+       "⎣⎝δ + g + n ⎠     ⎦"
+      ]
+     },
+     "execution_count": 54,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "\n",
+    "f=k**alpha\n",
+    "tc=sm.Eq(0,(s*(1-theta)*k**alpha-(delta+g+n)*k))\n",
+    "tcc=sm.solve(tc,k)\n",
+    "tcc"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 64,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "tc_func = sm.lambdify((s,g,n,delta,alpha,theta),tcc)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 65,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "image/png": "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\n",
+      "text/latex": [
+       "$$\\left [ 6.261568722311015\\right ]$$"
+      ],
+      "text/plain": [
+       "[6.261568722311015]"
+      ]
+     },
+     "execution_count": 65,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "tc_func(0.25,0.015,0.01,0.035,0.25,0.05)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.1"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
