@@ -7,9 +7,9 @@ Created on Tue May  7 13:42:42 2019
 
 
 s = 0.25
-g_b = 0.015
+g_B = 0.015
 n = 0.01
 alpha = 0.25
 delta = 0.035
 theta = 0.05
-g_a = 0.03
+g_A = 0.03

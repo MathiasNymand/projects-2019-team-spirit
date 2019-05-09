@@ -9,29 +9,27 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 64,
+   "execution_count": 163,
    "metadata": {},
    "outputs": [],
    "source": [
     "## Importing packages \n",
     "\n",
     "import numpy as np\n",
-    "from scipy import linalg\n",
     "from scipy import optimize\n",
     "import sympy as sm\n",
     "sm.init_printing(use_unicode=True)\n",
     "import matplotlib.pyplot as plt\n",
-    "import math\n",
     "import ipywidgets as widgets\n",
-    "import time\n",
     "%matplotlib inline\n",
     "import matplotlib.pyplot as plt\n",
-    "import ipywidgets as widgets"
+    "import ipywidgets as widgets\n",
+    "from IPython.display import Image"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 65,
+   "execution_count": 164,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -51,45 +49,108 @@
    "metadata": {},
    "source": [
     "Our assignment builds on the original Solow model that was presented by Solow and Swan (1956). The standard Solow model is given by these equations:  \n",
-    "$Q=F(K,BL)=K^\\alpha BL^{1-\\alpha},$ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   $1>\\alpha>0$    \n",
-    "$\\dot{K}=sY-\\delta K$  \n",
-    "$\\dot{L}=nL \\Rightarrow L=L_0 e^{nt} $  \n",
-    "$\\dot{B}=g_B B \\Rightarrow B=B_0 e^{g_Bt},$ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $1>g_B>0$\n",
     "\n",
-    "The first equation shows a simple Cobb-Douglas production function where the production of gross output, Q, is made through Capital, K, and effective labour, BL. It can be shown that the production function exhibits constant return to scale.  \n",
+    "\\begin{align}\n",
+    "    & Q = F(K,BL) = K^{\\alpha}BL^{1-\\alpha}, \\quad 1>\\alpha>0 \\quad \\quad (1) \\\\\n",
+    "    & \\dot{K} = sY - \\delta K \\\\ \n",
+    "    & \\dot{L} = nL \\Rightarrow L=L_0 e^{nt} \\\\\n",
+    "    & \\dot{B} = g_BB \\Rightarrow B=B_0 e^{g_Bt}, \\quad 1>g_B>0\n",
+    "\\end{align}\n",
+    "\n",
+    "The first equation shows a simple Cobb-Douglas production function where the production of gross output, Q, is made through Capital, K, and effective labour, BL. It can be shown that the production function exhibits constant return to scale.\n",
     "The second equation is describing the evolution of capital, where, s, is a fixed savings rate of net output, Y. From equation 2 we see that the capital is assumed to depreciate with a constant rate, $\\delta$.  \n",
     "The third equation presents the evolution of workers over time. We notice that the evoulution is given by a constant growth rate, n. \n",
     "Lastly, we see that the technological progress in the production of output is given by the exogenous growth rate, $g_B$.\n",
     "\n",
-    "In this assignment we will be working with an exstention of the original Solow model. Namely, we will work with the Green Solow model developed by William A. Brock and M. Scott Taylor (2004). In their model they add a function describing total emissions, E, given by:  \n",
-    "$E=\\Omega Q-\\Omega A(Q,R)$  \n",
+    "In this assignment we will be working with an exstention of the original Solow model. Namely, we will work with the Green Solow model developed by William A. Brock and M. Scott Taylor (2004). In their model they add a function describing total emissions, E, given by:\n",
+    "\n",
+    "\\begin{align}\n",
+    "E=\\Omega Q-\\Omega A(Q,R)\n",
+    "\\end{align}\n",
+    "\n",
     "This simply shows that total emissions is given by the amount of pullution produced minus the amount of pollution abated.  \n",
     "$\\Omega$ is the fraction of pollution arising from the production of gross output, Q. It is important to notice that it is assumed that every unit of output generates the same fraction of pollution. Further, the equation shows that abatement exists in the economy. $(A(Q,R))$. The abatement has a negative effect on the total amount of emissions. Hence, abatement reduces the amount of pollution released into the atmosphere.\n",
     "\n",
     "In the Green Solow model it is assumed that the abatement function is a concave function that is increasing with gross output, Q, and the economy's effort at abatement, R. Hence, abatement has a diminishing effect on total emissions.\n",
     "\n",
     "When considering the Green Solow model there must be a lower amount available for consumption and investment due to the inclusion of abatement. We define this net output (income) as Y:  \n",
-    "$Y=Q-R=(1-\\theta)Q$  \n",
-    "We can rewrite this in order to understand how emissions are being affected in the Green Solow model.  \n",
-    "$E=\\Omega (Q-A(Q,R))$  \n",
-    "$E=\\Omega Q(1-A(1,\\frac{R}{Q})$  \n",
-    "$E=\\Omega Q \\alpha(\\theta),$ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $\\theta \\equiv \\frac{R}{Q}$ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $\\alpha(\\theta) \\equiv 1-A(1,\\theta)$\n",
+    "\n",
+    "\\begin{align}\n",
+    "Y=Q-R=(1-\\theta)Q\n",
+    "\\end{align}\n",
+    "\n",
+    "We can rewrite this in order to understand how emissions are being affected in the Green Solow model.\n",
+    "\n",
+    "\\begin{align}\n",
+    "    &E=\\Omega (Q-A(Q,R))\\\\  \n",
+    "    &E=\\Omega Q(1-A(1,\\frac{R}{Q})\\\\  \n",
+    "    &E=\\Omega Q \\alpha(\\theta), \\quad \\theta \\equiv \\frac{R}{Q} \\quad \\alpha(\\theta) \\equiv 1-A(1,\\theta)\\\\\n",
+    "\\end{align}\n",
+    "\n",
     "\n",
     "We notice that the emissions are affected by the scale of economic activity, Q. Further, we notice that the abatement intensity, $\\theta$ is assumed constant. There are more underlying mechanism in the Green Solow model such as the development in the fraction $\\Omega$ that we won't go into detail with due to the focus of this assignment.\n",
     "\n",
-    "We are able to derive the model in output per effective worker since the production function has constant returns to scale. This implies that:  \n",
-    "$Q=K^\\alpha (BL)^{1-\\alpha} \\Rightarrow q=k^\\alpha$ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $q\\equiv \\frac{Q}{BL},$ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $k\\equiv \\frac{K}{BL}$\n",
+    "We are able to derive the model in output per effective worker since the production function has constant returns to scale. This implies that: \n",
+    "\n",
+    "\\begin{align}\n",
+    "Q=K^\\alpha (BL)^{1-\\alpha} \\Rightarrow q=k^\\alpha \\quad q\\equiv \\frac{Q}{BL},\\quad k\\equiv \\frac{K}{BL}\n",
+    "\\end{align}\n",
     "\n",
     "Using the above definitons we are now able to calculate the transition equation for capital per effective worker. When using the second equation and **the definitons just given** we get the following transition equation for capital per effective worker:  \n",
-    "$\\dot{k}=s(1-\\theta)k^\\alpha-k(\\delta+g_B+n)$\n",
     "\n",
-    "It can be shown that the growth rate for total emissions is given by:  \n",
-    "$\\frac{\\dot{E}}{E}=g_E+\\alpha \\frac{\\dot{k}}{k},$ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; $g_E\\equiv g_B+n-g_A$\n",
+    "\\begin{align}\n",
+    "\\dot{k}=s(1-\\theta)k^\\alpha-k(\\delta+g_B+n)$\n",
+    "\\end{align}\n",
     "\n",
-    "When substituting for $\\frac{\\dot{k}}{k}$ we get:  \n",
-    "$\\frac{\\dot{E}}{E}=\\alpha s(1-\\theta)k^{\\alpha-1}-[\\alpha(\\delta+g_B+n)-g_E]$\n",
+    "It can be shown that the growth rate for total emissions is given by:\n",
     "\n",
-    "When considering this equation we notice that the emissions will peak ($\\dot{E}=0$) when $\\alpha s(1-\\theta)k^{\\alpha-1}=[\\alpha(\\delta+g_B+n)-g_E]$"
+    "\\begin{align}\n",
+    "\\frac{\\dot{E}}{E}=g_E+\\alpha \\frac{\\dot{k}}{k}, \\quad; g_E\\equiv g_B+n-g_A\n",
+    "\\end{align}\n",
+    "\n",
+    "When substituting for $\\frac{\\dot{k}}{k}$ we get:\n",
+    "\n",
+    "\\begin{align}\n",
+    "\\frac{\\dot{E}}{E}=\\alpha s(1-\\theta)k^{\\alpha-1}-[\\alpha(\\delta+g_B+n)-g_E]\n",
+    "\\end{align}\n",
+    "\n",
+    "When considering this equation we notice that the emissions will peak ($\\dot{E}=0$) when $\\alpha s(1-\\theta)k^{\\alpha-1}=[\\alpha(\\delta+g_B+n)-g_E]$\n",
+    "\n",
+    "**Sustainable growth**  \n",
+    "Brock and Taylor (2004) define sustainable growth as a situation where the growth rate of net output per capita is positive, while the growth rate of total emissions is negative\n",
+    "\n",
+    "\\begin{align}\n",
+    "    \\dot{y}>0 \\quad \\wedge \\quad \\dot{E}<0\n",
+    "\\end{align}\n",
+    "\n",
+    "It is possible to establish conditions that will secure that sustainable growth occurs within the Green Solow model.\n",
+    "\n",
+    "From the equations defined in the Green Solow model it can be shown that the growth rate of y must be given by: \n",
+    "\n",
+    "\\begin{align}\n",
+    "    \\frac{\\dot{y}}{y} = g_B+\\alpha \\frac{\\dot{k}}{k}\n",
+    "\\end{align}\n",
+    "\n",
+    "Brock and Taylor also present a growth for total emission, which is given by: \n",
+    "\n",
+    "\\begin{align}\n",
+    "    \\frac{\\dot{E}}{E} = g_E +\\alpha \\frac{\\dot{k}}{k}, \\quad g_E \\equiv g_B+n-g_A \n",
+    "\\end{align}\n",
+    "\n",
+    "In steady state $\\dot{k}=0$. When applying this we get the following growth rates on the balanced growth path:\n",
+    "\n",
+    "\\begin{align}\n",
+    "    & \\frac{\\dot{y}}{y}=g_B  \\qquad , \\qquad  \\frac{\\dot{E}}{E}=g_E\n",
+    "\\end{align}\n",
+    "\n",
+    "We can thereby conclude that sustainable growth is secured  when \n",
+    "\n",
+    "\\begin{align}\n",
+    "    & g_B > 0 \\qquad \\wedge \\qquad  \\underbrace{g_A}_{\\text{Technique effect}} > \\underbrace{g_B + n}_{\\text{Scale effect}}\n",
+    "\\end{align}\n",
+    "\n",
+    "We note that technological growth in the production of net output is positive by assumption. However, from the second condition we see that the technological growth in abatement must be larger than the technological growth in the production of gross output plus the population growth rate. The term $n+g_B$ can be defined as the scale effect, as this measures the rate at which aggregate gross output grows. The term $g_A$ is defined as the technological progress in abatement, which reflects the technique effect.  \n",
+    "We will use these definitions in the end of this project in order to secure the understanding of how an Environmental Kuznets Curve EKC relationship can potentially arise from the Green Solow model"
    ]
   },
   {
@@ -103,14 +164,14 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 66,
+   "execution_count": 165,
    "metadata": {},
    "outputs": [
     {
      "data": {
-      "image/png": "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\n",
+      "image/png": "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\n",
       "text/latex": [
-       "$$\\left [ \\left(\\frac{s \\left(- \\theta + 1\\right)}{\\delta + g_{b} + n}\\right)^{- \\frac{1}{\\alpha - 1}}\\right ]$$"
+       "$$\\left [ \\left(\\frac{s \\left(- \\theta + 1\\right)}{\\delta + g_{B} + n}\\right)^{- \\frac{1}{\\alpha - 1}}\\right ]$$"
       ],
       "text/plain": [
        "⎡              -1  ⎤\n",
@@ -118,10 +179,10 @@
        "⎢             α - 1⎥\n",
        "⎢⎛ s⋅(-θ + 1)⎞     ⎥\n",
        "⎢⎜───────────⎟     ⎥\n",
-       "⎣⎝δ + g_b + n⎠     ⎦"
+       "⎣⎝δ + g_B + n⎠     ⎦"
       ]
      },
-     "execution_count": 66,
+     "execution_count": 165,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -129,7 +190,7 @@
    "source": [
     "# Stating the transition equation and setting it equal to zero\n",
     "f=k**alpha\n",
-    "tc=sm.Eq(0,(s*(1-theta)*k**alpha-(delta+g_b+n)*k))\n",
+    "tc=sm.Eq(0,(s*(1-theta)*k**alpha-(delta+g_B+n)*k))\n",
     "\n",
     "# Solving the transition equation (tc) for k\n",
     "tcc=sm.solve(tc,k)\n",
@@ -146,7 +207,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 67,
+   "execution_count": 166,
    "metadata": {},
    "outputs": [
     {
@@ -159,14 +220,14 @@
        "[6.261568722311015]"
       ]
      },
-     "execution_count": 67,
+     "execution_count": 166,
      "metadata": {},
      "output_type": "execute_result"
     }
    ],
    "source": [
     "# Converting our tcc sympy function into a lambda function, making it possible to calculate a numerical value solution.\n",
-    "tc_func = sm.lambdify((s,g_b,n,delta,alpha,theta),tcc)\n",
+    "tc_func = sm.lambdify((s,g_B,n,delta,alpha,theta),tcc)\n",
     "    \n",
     "# Adding numerical values to our parameters\n",
     "tc_func(0.25,0.015,0.01,0.035,0.25,0.05)"
@@ -190,7 +251,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 68,
+   "execution_count": 167,
    "metadata": {},
    "outputs": [
     {
@@ -203,7 +264,7 @@
        "6.261568722311015"
       ]
      },
-     "execution_count": 68,
+     "execution_count": 167,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -213,7 +274,7 @@
     "exec(open(\"Def_values.py\").read())\n",
     "\n",
     "# Defining our steady state as a lambda function\n",
-    "obj_kss = lambda k: 0 - (s*(1-theta)*k**alpha-(delta+g_b+n)*k)\n",
+    "obj_kss = lambda k: 0 - (s*(1-theta)*k**alpha-(delta+g_B+n)*k)\n",
     "\n",
     "# optimize.newton uses a numerical solution to find a numerical value solution to our steady state\n",
     "result = optimize.newton(obj_kss,x0=1)\n",
@@ -235,7 +296,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 69,
+   "execution_count": 168,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -246,12 +307,12 @@
     "# The break even equation does not depend on any of the parameters we have set for our widget. \n",
     "# The point where the two functions intersect is the steady state value of k\n",
     "def break_even(k):\n",
-    "    return (delta+g_b+n)*k"
+    "    return (delta+g_B+n)*k"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 70,
+   "execution_count": 169,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -268,7 +329,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 71,
+   "execution_count": 170,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -296,18 +357,18 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 72,
+   "execution_count": 171,
    "metadata": {},
    "outputs": [
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "0715f66ff2c64fe6bced686081d129ca",
+       "model_id": "30556cf6e5c3483986d0ccf0d9a9ed77",
        "version_major": 2,
        "version_minor": 0
       },
       "text/plain": [
-       "interactive(children=(FloatSlider(value=0.05, description='$Theta$', max=1.0, step=0.01), FloatSlider(value=0.…"
+       "interactive(children=(FloatSlider(value=0.05, description='$\\\\theta$', max=1.0, step=0.01), FloatSlider(value=…"
       ]
      },
      "metadata": {},
@@ -322,8 +383,8 @@
     "widgets.interact(transition_diagram2,\n",
     "    \n",
     "    # widgets for all the inputs in the function transition_diagram2             \n",
-    "    theta=widgets.FloatSlider(description=\"$Theta$\", min=0, max=1, step=0.01, value=0.05),\n",
-    "    alpha=widgets.FloatSlider(description=\"$Alpha$\", min=0, max=1, step=0.01, value=0.25),\n",
+    "    theta=widgets.FloatSlider(description=\"$\\\\theta$\", min=0, max=1, step=0.01, value=0.05),\n",
+    "    alpha=widgets.FloatSlider(description=\"$\\\\alpha$\", min=0, max=1, step=0.01, value=0.25),\n",
     "    s=widgets.FloatSlider(description=\"$s$\", min=0, max=1, step=0.01, value=0.25),\n",
     "    \n",
     ");"
@@ -333,7 +394,8 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Comment on the figure!!"
+    "The intersect of the two curves illustrates the steady state. It is evident from the figure that if the entire gross product is spent on abatament, i.e. $\\theta=1$, then the economy will implode, since there is no accumulation of capital. The lower the abatement intensity the higher the level of capital will be in steady state. However, a low level of abatement may cause irreversible damage to the environment making the economy implode before the the steady state is reached.\n",
+    "A larger saving also increase the capital in the steady state. This is logical since a higher savings rate implies a higher accumulation of capital."
    ]
   },
   {
@@ -349,7 +411,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 73,
+   "execution_count": 172,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -359,32 +421,32 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 74,
+   "execution_count": 173,
    "metadata": {},
    "outputs": [
     {
      "data": {
-      "image/png": "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\n",
+      "image/png": "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\n",
       "text/latex": [
-       "$$\\left [ \\left(\\frac{- \\alpha \\delta - \\alpha g_{b} - \\alpha n - g_{a} + g_{b} + n}{\\alpha s \\left(\\theta - 1\\right)}\\right)^{\\frac{1}{\\alpha - 1}}\\right ]$$"
+       "$$\\left [ \\left(\\frac{- \\alpha \\delta - \\alpha g_{B} - \\alpha n - g_{A} + g_{B} + n}{\\alpha s \\left(\\theta - 1\\right)}\\right)^{\\frac{1}{\\alpha - 1}}\\right ]$$"
       ],
       "text/plain": [
-       "⎡                                     1  ⎤\n",
-       "⎢                                   ─────⎥\n",
-       "⎢                                   α - 1⎥\n",
-       "⎢⎛-α⋅δ - α⋅g_b - α⋅n - gₐ + g_b + n⎞     ⎥\n",
-       "⎢⎜─────────────────────────────────⎟     ⎥\n",
-       "⎣⎝           α⋅s⋅(θ - 1)           ⎠     ⎦"
+       "⎡                                      1  ⎤\n",
+       "⎢                                    ─────⎥\n",
+       "⎢                                    α - 1⎥\n",
+       "⎢⎛-α⋅δ - α⋅g_B - α⋅n - g_A + g_B + n⎞     ⎥\n",
+       "⎢⎜──────────────────────────────────⎟     ⎥\n",
+       "⎣⎝           α⋅s⋅(θ - 1)            ⎠     ⎦"
       ]
      },
-     "execution_count": 74,
+     "execution_count": 173,
      "metadata": {},
      "output_type": "execute_result"
     }
    ],
    "source": [
     "# Stating the emision equation and setting it equal to zero\n",
-    "max_emis=sm.Eq(0,(alpha*s*(1-theta)*k**(alpha-1)-(alpha*(delta+g_b+n)-(g_b+n-g_a))))\n",
+    "max_emis=sm.Eq(0,(alpha*s*(1-theta)*k**(alpha-1)-(alpha*(delta+g_B+n)-(g_B+n-g_A))))\n",
     "\n",
     "# Solving the emission equation (max_emis) for k\n",
     "max_emis_k=sm.solve(max_emis,k)\n",
@@ -400,7 +462,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 75,
+   "execution_count": 174,
    "metadata": {},
    "outputs": [
     {
@@ -413,7 +475,7 @@
        "[4.266759550779367]"
       ]
      },
-     "execution_count": 75,
+     "execution_count": 174,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -421,7 +483,7 @@
    "source": [
     "# Converting our maximum emissions sympy function (max_emis_func) into a lambda function, making it possible to\n",
     "# calculate a numerical value solution.\n",
-    "max_emis_func = sm.lambdify((s,g_b,n,delta,alpha,theta,g_a),max_emis_k)\n",
+    "max_emis_func = sm.lambdify((s,g_B,n,delta,alpha,theta,g_A),max_emis_k)\n",
     "\n",
     "# Adding numerical values to our parameters\n",
     "max_emis_func(0.25,0.015,0.01,0.035,0.25,0.05,0.03)"
@@ -438,19 +500,42 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "### 2.2 Environmental Kuznets Curve"
+    "### 2.2 The Environmental Kuznets Curve\n",
+    "\n",
+    "The Environmental Kuznets Curve (EKC) describes a bell-shaped relationship between total emissions and income per capita, depicted in the figure below. The original Kuznets curve was formalized by Simon Kuznets (1955) as a bell-shaped relationship between income inequality and income per capita. In the early 1990s the idea behind the original Kuznets curve was translated to describe a relationship between total emissions and income per capita, thereby given the name \"The Environmental Kuznets Curve\". The figure of the EKC shows that as income per capita increases, in the early stages of economic development, when income per capita is low, emissions will increase as well. However, at a certain point when income per capita gets sufficiently high a turning point is reached. After this turning point income per capita will continue to rise, but emissions will start to decline.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 175,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "image/png": "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\n",
+      "text/plain": [
+       "<IPython.core.display.Image object>"
+      ]
+     },
+     "execution_count": 175,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "Image(filename=\"Kuznetz_Curve.png\")"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "We would like to illustrate how the Environmental Kuznetz Curve is derived. First we define functions to use in the plot  "
+    "We would like to illustrate how the Environmental Kuznetz Curve is derived. First we define functions to use in the plot."
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 85,
+   "execution_count": 176,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -460,7 +545,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 86,
+   "execution_count": 177,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -468,23 +553,31 @@
     "def ekc(k, theta,s):\n",
     "    return (alpha*s*(1-theta)*k**(alpha-1))\n",
     "\n",
+    "#Defining g_E\n",
+    "g_E=g_B+n-g_A \n",
+    "\n",
     "# Calculate the turning point of the emissions\n",
     "def turning_point(alpha):\n",
-    "    return alpha*(delta+g_b+n)-(g_b+n-g_a)\n",
+    "    return alpha*(delta+g_B+n)-(g_E)\n",
     "\n",
-    "# Calculate the steady state value of \n",
+    "# Calculate the steady state value of emissions at the steady state level of capital\n",
     "def steady_state(alpha):\n",
-    "    return alpha*(delta+g_b+n)\n",
-    "    \n",
+    "    return alpha*(delta+g_B+n)\n",
+    "\n",
+    "# To plot intersections between the change of emissions and the two curves defined above, we define a algorithm to \n",
+    "# find the position (index) on the x-values array of the closest value to the two horizontal curves.  \n",
     "def find_nearest(array, values):\n",
     "    indices = np.abs(np.subtract.outer(array, values)).argmin(0)\n",
     "    return indices\n",
+    "\n",
+    "# to avoid dividing by zero, we define another x-vector (k-vector) that does not start in zero. \n",
+    "x_vec2 = np.linspace(0.01,200,1000)\n",
     "    "
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 87,
+   "execution_count": 178,
    "metadata": {},
    "outputs": [],
    "source": [
@@ -493,58 +586,75 @@
    ]
   },
   {
-   "cell_type": "code",
-   "execution_count": 88,
+   "cell_type": "markdown",
    "metadata": {},
-   "outputs": [],
    "source": [
-    "def ekc_diagram(theta,s):\n",
-    "    fig = plt.figure(figsize=(7,4)) # create the figure\n",
-    "    plt.xlabel('k')\n",
-    "    ekc_calc=ekc(x_vec2, theta,s)\n",
-    "    steady_state_val=steady_state(alpha)\n",
-    "    turning_point_val=turning_point(alpha)\n",
-    "    plt.title('Generating Environmental Kuznets Curve')\n",
-    "    ax = fig.add_subplot(1,1,1) # create a 3d axis in the figure \n",
-    "    plt.axhline(y=steady_state_val, color='r', linestyle='-', label=\"$\\\\alpha \\cdot(\\delta+g_B+n)$\")\n",
-    "    plt.axhline(y=turning_point_val, color='y', linestyle='-', label=\"$\\\\alpha \\cdot(\\delta+g_B+n)-(g_b+n-g_a)$\")\n",
-    "    ax.plot(ekc_calc, label='$\\\\alpha \\cdot s \\cdot(1-\\\\theta)\\cdot k^{\\\\alpha-1}$'); # create surface plot in the axis\n",
-    "    steady_state_x=find_nearest(ekc_calc,steady_state_val)\n",
-    "    turning_point_x=find_nearest(ekc_calc,turning_point_val)\n",
-    "    ax.plot([steady_state_x], [steady_state_val], 'o', color='k')\n",
-    "    ax.plot([turning_point_x], [turning_point_val], 'o', color='k')\n",
-    "    ax.annotate('Point B', xy=(steady_state_x, steady_state_val), xytext=(steady_state_x, steady_state_val+0.001),\n",
-    "               )\n",
-    "    ax.annotate('Point T', xy=(turning_point_x, turning_point_val), xytext=(turning_point_x, turning_point_val+0.001),\n",
-    "               )\n",
-    "               \n",
-    "    \n",
-    "    \n",
-    "    #idx = np.argwhere(np.diff(np.sign(ekc_calc - steady_state_val))).flatten()\n",
-    "    #plt.plot(x_vec2[idx], steady_state_val[idx], 'ro')\n",
-    "    #x,y=np.intersect1d([ekc_calc],[turning_point_val],[steady_state_val])\n",
-    "    #plt.scatter(y,\"*k\")\n",
-    "    ax.set_xlim([0,200]) # fixed x range\n",
-    "    ax.set_ylim([0,0.05])\n",
-    "    ax.set_yticklabels([])\n",
-    "    ax.set_xticklabels([])\n",
-    "    plt.legend()\n"
+    "We define our diagram to show how the Environmental Kuznetz Curve is derived"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 89,
+   "execution_count": 179,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# two inputs in the diagram to include in the widget-slides\n",
+    "def ekc_diagram(theta,s):\n",
+    "    fig = plt.figure(figsize=(7,4)) # create the figure\n",
+    "    plt.xlabel('k') # label x-axis\n",
+    "    ekc_calc=ekc(x_vec2, theta,s) # calculate the change in ekc using the function\n",
+    "    steady_state_val=steady_state(alpha) # calculate the emissions at the steady state value of k\n",
+    "    turning_point_val=turning_point(alpha) # calculate the emissions at the turning point level\n",
+    "    plt.title('Generating Environmental Kuznets Curve') #title\n",
+    "    ax = fig.add_subplot(1,1,1) # Include many plots \n",
+    "    # steady state horizontal line\n",
+    "    plt.axhline(y=steady_state_val, color='r', linestyle='-', label=\"$\\\\alpha \\cdot(\\delta+g_B+n)$\") \n",
+    "    # turning point horizontal line\n",
+    "    plt.axhline(y=turning_point_val, color='y', linestyle='-', label=\"$\\\\alpha \\cdot(\\delta+g_B+n)-g_E$\")\n",
+    "    # plot the change in emissions\n",
+    "    ax.plot(ekc_calc, label='$\\\\alpha \\cdot s \\cdot(1-\\\\theta)\\cdot k^{\\\\alpha-1}$');\n",
+    "    # Find the x-value of intersection with steady state\n",
+    "    steady_state_x=find_nearest(ekc_calc,steady_state_val)\n",
+    "    # Find the x-value of intersection with turning point\n",
+    "    turning_point_x=find_nearest(ekc_calc,turning_point_val)\n",
+    "    # plot the intersection\n",
+    "    ax.plot([steady_state_x], [steady_state_val], 'o', color='k')\n",
+    "    # plot the intersection\n",
+    "    ax.plot([turning_point_x], [turning_point_val], 'o', color='k')\n",
+    "    # annotate above the intersection\n",
+    "    ax.annotate('Point B', xy=(steady_state_x, steady_state_val), xytext=(steady_state_x, steady_state_val+0.001),\n",
+    "               )\n",
+    "    # annotate above the intersection\n",
+    "    ax.annotate('Point T', xy=(turning_point_x, turning_point_val), xytext=(turning_point_x, turning_point_val+0.001),\n",
+    "               )\n",
+    "    ax.set_xlim([0,200]) # fixed x range\n",
+    "    ax.set_ylim([0,0.05]) # fixed y range\n",
+    "    ax.set_yticklabels([]) # no labels\n",
+    "    ax.set_xticklabels([]) # no labels\n",
+    "    plt.legend() # legend    "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We call our predefined function ekc_diagram and make it interactive! "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 180,
    "metadata": {},
    "outputs": [
     {
      "data": {
       "application/vnd.jupyter.widget-view+json": {
-       "model_id": "7c68d58161604aa790eef63f86225311",
+       "model_id": "efe0f7c2de47415994d8f5a8a530fa71",
        "version_major": 2,
        "version_minor": 0
       },
       "text/plain": [
-       "interactive(children=(FloatSlider(value=0.05, description='$Theta$', max=1.0, min=0.005, step=0.01), FloatSlid…"
+       "interactive(children=(FloatSlider(value=0.05, description='$\\\\theta$', max=1.0, min=0.005, step=0.01), FloatSl…"
       ]
      },
      "metadata": {},
@@ -552,9 +662,14 @@
     }
    ],
    "source": [
+    "# Widgets - all our widgets have the same min and max. Starting values differ according to the default values stated in \n",
+    "# our model description earlier, they can also be found in the .py file with values.\n",
+    "\n",
+    "#call diagram\n",
     "widgets.interact(ekc_diagram,\n",
     "    \n",
-    "    theta=widgets.FloatSlider(description=\"$Theta$\", min=0.005, max=1, step=0.01, value=0.05),\n",
+    "    # widgets for all the inputs in the function ekc_diagram             \n",
+    "    theta=widgets.FloatSlider(description=\"$\\\\theta$\", min=0.005, max=1, step=0.01, value=0.05),\n",
     "    s=widgets.FloatSlider(description=\"$s$\", min=0.005, max=1, step=0.01, value=0.25),\n",
     "    \n",
     ");"
@@ -564,15 +679,28 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Comment on the figure!!!"
+    "To see how the Green Solow model can trace out an EKC relationship, we use equation (11) and (16). From these equations it is possible to link the dynamics of capital accumulation with the evolution of total emissions. In the figure above we have capital per effective worker on the horizontal axis, while we have the rates of change of $\\alpha$ times capital per effective worker ($\\alpha \\frac{\\dot{k}}{k}$) and the flow of emissions ($\\dot{E}/E$) on the vertical axis. \n",
+    "We refer to the down-sloping function $\\alpha s (1-\\theta)k^{\\alpha - 1}$ as the savings locus, as it is shifted to the left and right when s goes down or up respectively. The savings locus will start at infinity and converge towards 0 as capital per effective worker increases. Hence, the rates of change for emissions will be high at a low k, and the rates of change for emissions will decrease when k increases. The same goes for capital per effective worker. As the savings locus is downward sloping, it must be the case that it intersects the two points T and B. Point T refers to the turning point for emissions, and point B refers to the steady state value for capital per effective worker. To verify that T and B represent these two points we note from equation (16) that when emissions peak ($\\dot{E} = 0$) then \n",
+    "\\begin{align}\n",
+    "    \\frac{\\dot{E}}{E} = g_E +\\alpha (s(1-\\theta)k^{\\alpha-1}-(\\delta+g_B+n)) = 0 => \\alpha s(1-\\theta)k^{\\alpha-1} = \\alpha(\\delta+g_B+n) -g_E  \n",
+    "\\end{align}\n",
+    "This is what happens at point T. From equation (19) it is apparent that to the left of point T the growth rate of emissions will be positive and to the right of point T the growth rate of emissions will be negative. Hence, point T must represent a turning point for total emissions. Looking at the horizontal line of $\\alpha (\\delta + g_B + n)$ we see that the vertical distance between the two curves must be $\\alpha \\frac{\\dot{k}}{k}$. This is seen as\n",
+    "\\begin{align*}\n",
+    "    \\alpha\\frac{\\dot{k}}{k}=\\alpha s(1-\\theta)k^{\\alpha-1}- \\alpha (\\delta+g_B+n) \n",
+    "\\end{align*}\n",
+    "In steady state $\\dot{k}=0$ such that\n",
+    "\\begin{align*}\n",
+    "    \\alpha\\frac{\\dot{k}}{k}=\\alpha s(1-\\theta)k^{\\alpha-1}- \\alpha (\\delta+g_B+n) =0 \\Rightarrow \\alpha s(1-\\theta)k^{\\alpha-1} = \\alpha (\\delta+g_B+n)\n",
+    "\\end{align*}\n",
+    "And we therefore conclude that point B represents the steady state level for capital per effective worker. It must be the case that k is rising to the left of B but falling to the right of B. We see that when k is small there must be a rapid growth in capital per effective worker but this growth rate falls as k approaches its steady state level. This dynamic is transferred to the growth dynamics of emissions, due to $g_E$ being constant in equation (16).    \n",
+    "\n",
+    "\n",
+    "\n",
+    "The EKC relationship described above is a combination of unsustainable and sustainable growth. In the early stages of economic development a country will exhibit unsustainable growth, that is $g_A<g_B+n$. Such that the scale effect dominates the technique effect, representing increasing emissions as income increases. This is generated by a low amount of capital, reflecting a high marginal product of capital. This leads to increased savings and investments thereby increasing income. As there is diminishing returns to capital, the growth rate of income will fall as the economy approaches its steady state level. As the growth in abatement technology is constant it will surpass the growth in income, generating the sustainable situation where the technique effect dominates the scale effect ($g_A>g_B+n$). Hence income will continue to rise but total emissions will start to decline. The EKC is not generated by increased awareness towards the environment, which would have been reflected by an increased abatement intensity ($\\theta$). It is only generated by the forces between the growth rates.  \n",
+    "When deriving the above results, it was assumed that growth was sustainable such that T lied to the left of B ($g_E<0$), implying that the steady state level for capital per effective worker was reached after emissions peaked. However, a EKC will not necessarily arise even in the sustainable case. If the initial capital stock lies between point T and B, then there will be ever declining emissions, since the turning point (T) has been surpassed.  \n",
+    "It is also possible that growth is not sustainable ($g_E>0$). If growth is not sustainable then T would lie to the right of B. In this scenario emissions will continue to rise towards infinity, but as capital per effective worker approaches its steady state level the growth rate of total emissions will fall. However, in the balanced growth path emissions will continue to rise.   \n",
+    "As the above analysis shows there exists a turning point for total emissions (under appropriate conditions). It is however not the case that the level of total emissions, nor income per capita will be unique at this turning point. To verify this consider two economies with an identical level of capital per effective worker that both are at $k(T)$. If one of the economies has a lower working population, but a more effective one, then income per capita will differ at the turning point. The same reasoning can explain why the peak level of emissions may differ. A larger economy will have higher emissions at any time, as they naturally pollute more, but might have the same capital per effective worker."
    ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": []
   }
  ],
  "metadata": {
