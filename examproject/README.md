@@ -24,4 +24,8 @@ It is entirely on purpose that the sympy variables and and python-style paramete
 In order for the project to work all the files from the repositories must be downloaded. This includes the .py files and the .png file. If you are using Anaconda no additional downloads will be needed for the project to run.
 
 **PART 3:**
-In the examproject we solve the models that are presented in the questions. 
+In the examproject we solve the models that are presented in the questions. In all three assignments sympy is a central package that we frequently use. Along with the many other packages and standard python functions, we solve, present, simulate and analyze the models. All the results are collected and presented in one single Jupyter Notebook. If you are using anaconda, no additional packages are required to run the examproject. 
+
+**PART 4:**
+A .txt file containing the links to the feedback by all three group members. The feedback links are divided into dataproject and modelproejct. The name of the groups the feedback is given to, is also in the .txt file. 
+
