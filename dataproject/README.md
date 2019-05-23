@@ -5,5 +5,5 @@ In this data project we are examining whether there are any correlation between 
 Utilizing this combined dataset we do some graphical explorations of the evolution of the unemployment rate and the fertility rate and the correlation between the two. Specifically, we are presenting a map showing the fertility rate and the unemployment rate for each municipal in 2007 and 2017. Furthermore, we are showing a figure where the two variables are indexed. This graph is an interactive figure where the development for both the fertility rate and the unemployment rate can be explored for each municipal in the timeline 2007-2017.
 
 
-In order for the project to work it is important that the API and GeoPandas packages are downloaded. Further, the shape files containing the map we are using should be downloaded from the repository in order to make the map visible.  
+In order for the project to work it is important that the API from Statistics Denmark and GeoPandas packages are downloaded and installed. The commands for installation is available in our jupyter notebook.  Further, the shape files containing the map we are using should be downloaded from the repository in order to make the map visible.  
 
