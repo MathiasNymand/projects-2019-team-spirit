@@ -5,4 +5,6 @@ After solving the equations we plot the transiaiton diagram and make it interact
 
 Next, we look at the change in emissions, and find the level of capital where emissions are the highest. Again, this is solved analytically and again we calculate the level of capital. After the equations have been solved, we make a additional interactive plot to show the reader how the level of capital changes with the parameter values.
 
-In order for the project to work all the files from the repositories must be downloaded. This includes the .py files and the .png file. If you are using Anaconda no additional downloads will be needed for the project to run. 
+It is entirely on purpose that the sympy variables and and python-style parameters are left in the .py files. For different parts of the project we use the sympy variables, and other for other parts we use the numerical values. The project would be quite a lot longer if we kept re-running huge blocks of variable definitions, and therefore we have left them out.
+
+In order for the project to work all the files from the repositories must be downloaded. This includes the .py files and the .png file. If you are using Anaconda no additional downloads will be needed for the project to run.
